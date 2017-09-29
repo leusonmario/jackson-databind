@@ -110,6 +110,7 @@
         <version>${version.plugin.surefire}</version>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <testFailureIgnore>true</testFailureIgnore>
           <classpathDependencyExcludes>
             <exclude>javax.measure:jsr-275</exclude>
           </classpathDependencyExcludes>
