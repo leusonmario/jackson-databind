@@ -1,3 +1,5 @@
+
+sudo: required
 language: java
 
 # Since Jackson 2.7, build requires jdk7, although module itself works on jdk6 still (for now)
@@ -11,14 +13,28 @@ before_install: "git clone -b travis `git config --get remote.origin.url` target
 after_success: "mvn source:jar javadoc:jar deploy --settings target/travis/settings.xml"
 
 # whitelist
-branches:
-  only:
-    - master
-    - "2.6"
-    - "2.7"
 
 env:
   global:
     - secure: "ZIFMeNzZCvLYWICiUyHFSm8Ypz6lYFbF/+LGz6a+Sh8B9tSnvYvlrE4gSFJj3NzRWY0RG/vizoyFEpVgxOnzXDMLuuy/dreupnHR1FfVmiaiceK4JHRwAzl0lQzr2hdVwJbqpX0GfrxKmbg8Jvv9WPKtfM6X4167ElVj4O/8IRc="
     - secure: "VOC/J8eFbM2OeysBp0Gx0G73MySRATCoN7hc9Ok0kJXE/dbE/2KOoFlTwwxUgErwJXkjJKKXafYcbq/22S7wkaoDW5XAvplSu3skxdE0NRGVzozcDMXO5UoGlt9Ti4XIBMCvy7bB/NO+J5IgNedCtcNnBsrGZCdodW3DTYtqQLs="
 
+
+script:
+- mvn clean -Dtest=ObjectReaderTest#testPointerLoadingMappingIteratorOne test jacoco:report
+
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/jackson-databind/target/site
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "MyXzrNSqaPaVJqFwU8ETB+CWcWMB+fm+CkISiKxlT06Ve3wYez80Rl1psdNgdKNAuM5m1+Qxz4cFoJl7HCjdgvmOg3ix/C0yzeH9cYod2WS4VHaXtnDYI+atQY0qUrJl8uyRIAphOAMWDW3yweyjmtjXz4niJuqXj+Hnyjbr2/kEvs2wv02RRL2WrSfTUs2MyQA/2DZ+F+VmpsmHqjuWg1BgdX6ZoAKfGd5PNk1lpzm4aACHXB6l7sEwRLw3As9eigC5eDKahdTafHfldIJLp7nr9+iO7ATvVS7dEKR/8tPao2KHii8mWVx7lZzDMrxYhpsNQvobBvxlmpWMooiTx4baNH5dwEun4kcTQ9AcQ0qw+jSmyydkkZjHDPL+6vmXoqQ3xVHnYypi0+P2j92xZDnrQ30/jujQEy0gQ9T15T0YuQMSR4m8ARf6t6zWOqEwBTXz0BWTEAGZRSvB6/+EeEWc1Tq22+lOqEI3qxqsu2matwl5p4BtJvI51/2RBoVJyfgvKk0JMpfk2s881WaZyMhpIR9M2/tu0rNSzNJTXAvAOqrmt+9j5ZdRXj3P+mhGnpOxrLTdzsyCBjF2oWbJcYiB82NF13bQTsiYTnslvnBtre/wT1oQjBQ/b9/yjJD+1mfU+kc/McExJbAYToHJS7i/IhWvPN3WZIBj9qt3kVY="
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
