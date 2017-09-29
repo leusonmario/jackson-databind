@@ -21,7 +21,7 @@ script:
 - mvn clean -Dtest=JsonIgnoreProperties1595Test#testIgnoreGetterNotSetter1595 test jacoco:report
 
 before_deploy:
-  - tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/HikariCP/target/site
+  - tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/jackson-databind/target/site
 deploy:
   provider: releases
   api_key:
