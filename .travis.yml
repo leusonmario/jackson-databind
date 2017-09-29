@@ -1,3 +1,4 @@
+required: sudo
 language: java
 
 # Since Jackson 2.7, build requires jdk7, although module itself works on jdk6 still (for now)
@@ -13,6 +14,7 @@ after_success: "mvn source:jar javadoc:jar deploy --settings target/travis/setti
 # whitelist
 branches:
   only:
+   - /.*/
     - master
     - "2.7"
     - "2.8"
@@ -21,3 +23,19 @@ env:
   global:
     - secure: "ZIFMeNzZCvLYWICiUyHFSm8Ypz6lYFbF/+LGz6a+Sh8B9tSnvYvlrE4gSFJj3NzRWY0RG/vizoyFEpVgxOnzXDMLuuy/dreupnHR1FfVmiaiceK4JHRwAzl0lQzr2hdVwJbqpX0GfrxKmbg8Jvv9WPKtfM6X4167ElVj4O/8IRc="
     - secure: "VOC/J8eFbM2OeysBp0Gx0G73MySRATCoN7hc9Ok0kJXE/dbE/2KOoFlTwwxUgErwJXkjJKKXafYcbq/22S7wkaoDW5XAvplSu3skxdE0NRGVzozcDMXO5UoGlt9Ti4XIBMCvy7bB/NO+J5IgNedCtcNnBsrGZCdodW3DTYtqQLs="
+
+script:
+- mvn clean -Dtest=JsonIgnoreProperties1595Test#testIgnoreGetterNotSetter1595 test jacoco:report
+
+before_deploy:
+  - tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/HikariCP/target/site
+deploy:
+  provider: releases
+  api_key:
+    secure: "b0iRLFEaLvlc9idK8wNAF4m6TMk7tqXOcxS1FocXyYE0gugH0Zf0FcRrCXzZfAcBSVuRiG3FET2PLEhDGNkTs1iQKtwk+NqH7SedLuFFK9Xx3HxLyYJB8hEaPChfNfRFRe7dUVDtOnEztzuncPRzMVcmUIHCXX/MW5YJL/eev4sA6l69UGZot+DQthGv9+VDAbXK1pKO+4U0pQ+YWcO4eLm/f5NDgWIPHQzwvl+1lhwLKUpRLhYWZvt27wl4Ct2dPaQ/773JeChRsnvNwbqznUklANtj0IweS7q7g4zABUAj6/Li+Hr33vgO+YZ9PoWaOjgshExOKN3jqJ29sd2OWKspNdHId/GvHAl9HuMCChjTRK7HWeqLlpNJgMnEM5GuF1jP85iH0OJfKMt4EcSZJjWID9sTOzxoVM6aB/LEDhYNL4mDtvzxSKVZLG+3IqBHtkIwd2Bne426Z/quDDI4GiNn5WODS4mFj5F43PjA0jGJVlGnf4IXv5158FWQnOpIa9aADZxE8CHf3T2A+VW7vj+RdlfkPmKc+9FgnNFf3X98h6AcC8qZm4I4gKFqogWiBuku7DoDiPXeEKZd9qFZasKOFFgum2MOg5I9gt9qGsqdr6L+5tF9kqng4HOwJb6bwirkTZHL75ZAbG3NDOEHtAgzo2fLI3Fy9KaRah/vGkw="
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
