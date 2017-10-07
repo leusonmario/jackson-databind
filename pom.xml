@@ -100,6 +100,7 @@
         <version>${version.plugin.surefire}</version>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+<testFailureIgnore>true</testFailureIgnore>
           <classpathDependencyExcludes>
             <exclude>javax.measure:jsr-275</exclude>
           </classpathDependencyExcludes>
@@ -137,6 +138,20 @@
             <id>process-packageVersion</id>
             <phase>process-sources</phase>
           </execution>
+        </executions>
+      </plugin>
+    
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.6.201602180812</version>
+        <executions>
+            <execution>
+                <id>prepare-agent</id>
+                <goals>
+                    <goal>prepare-agent</goal>
+                </goals>
+            </execution>
         </executions>
       </plugin>
     </plugins>
