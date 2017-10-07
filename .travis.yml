@@ -1,3 +1,5 @@
+
+sudo: required
 language: java
 
 # Since Jackson 2.7, build requires jdk7, although module itself works on jdk6 still (for now)
@@ -13,13 +15,27 @@ after_success:
   - "mvn cobertura:cobertura coveralls:report"
 
 # whitelist
-branches:
-  only:
-    - master
-    - "2.7"
-    - "2.8"
 
 env:
   global:
     - secure: "ZIFMeNzZCvLYWICiUyHFSm8Ypz6lYFbF/+LGz6a+Sh8B9tSnvYvlrE4gSFJj3NzRWY0RG/vizoyFEpVgxOnzXDMLuuy/dreupnHR1FfVmiaiceK4JHRwAzl0lQzr2hdVwJbqpX0GfrxKmbg8Jvv9WPKtfM6X4167ElVj4O/8IRc="
     - secure: "VOC/J8eFbM2OeysBp0Gx0G73MySRATCoN7hc9Ok0kJXE/dbE/2KOoFlTwwxUgErwJXkjJKKXafYcbq/22S7wkaoDW5XAvplSu3skxdE0NRGVzozcDMXO5UoGlt9Ti4XIBMCvy7bB/NO+J5IgNedCtcNnBsrGZCdodW3DTYtqQLs="
+
+script:
+- mvn clean -Dtest=TestTypedArraySerialization#testStringListAsProp test jacoco:report
+
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/jackson-databind/target/site
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "Pk6PdDKDl1AmO3ni/vugKcuhwmycmEwvP0yCKsg+/8wYq7vq8pPxRzcKtoamhZpBntyfGdkIsrcTk38wUCjSyqPttnVTdQTUnrMd7PUst82EY+/OuB1VChakKtiGNFexca21f9YwaqCitoLtCFaAlPSMYLkWZ+624UvJ8WeYrIfOQyP8g/N8N1A0LJ6wtYsc9kBrY1ALU5ZJCj2S2uRLFD+2/8Hb2i6ZzaUxzBFfDzwnx78WJcKOlWXrzOlNKlvAH+GSZhm8SaMw9l+E9gXOnvM5SAnqCifZ7w2OP6nHOyvEvLyTs3IAEwAn6lmWsLA7VorSKY2SyFvbZw5GPoS7PzchDXTHtzfAnGW6MT3zLIHYW+V1Cl7+pwLGwBsbCi1Zmc069mdHVGr2XO6cEnpTdolOmqfq5iNd9l17mwJG+6oNRfk9JSsue6e51rdvbKmssYaPIKwle/nAfUHa6bG3GMSOxKxFgD3k0EmuGu4IlobPWrjQ6Wf8fFKAVhklJvLBIQhrXyi7rnQPnMO6WUCRhvUEPZo56PgI96uE6lYDHVxVEipeAe4JRdS79Y2jJTwsffVIY6JdeGw4UwZ/Oha7RRlFMiaKVt7QGCLMdaU71jncy0gImSjeSHiMtV/MKWA/fj6mkhCcFByKYKsfRTfKTB+ypEkINgw5FVqlD2jG8u8="
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
