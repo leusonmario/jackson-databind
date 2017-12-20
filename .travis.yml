@@ -1,25 +1,29 @@
+
+sudo: required
 language: java
 
-# Since Jackson 2.7, build requires jdk7, although module itself works on jdk6 still (for now)
 jdk:
   - oraclejdk7
   - oraclejdk8
 
 # Below this line is configuration for deploying to the Sonatype OSS repo
-# http://blog.xeiam.com/2013/05/configure-travis-ci-to-deploy-snapshots.html
-before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
-after_success:
-  - "mvn source:jar javadoc:jar deploy --settings target/travis/settings.xml"
-  - "mvn cobertura:cobertura coveralls:report"
 
-# whitelist
-branches:
-  only:
-    - master
-    - "2.7"
-    - "2.8"
 
-env:
-  global:
-    - secure: "ZIFMeNzZCvLYWICiUyHFSm8Ypz6lYFbF/+LGz6a+Sh8B9tSnvYvlrE4gSFJj3NzRWY0RG/vizoyFEpVgxOnzXDMLuuy/dreupnHR1FfVmiaiceK4JHRwAzl0lQzr2hdVwJbqpX0GfrxKmbg8Jvv9WPKtfM6X4167ElVj4O/8IRc="
-    - secure: "VOC/J8eFbM2OeysBp0Gx0G73MySRATCoN7hc9Ok0kJXE/dbE/2KOoFlTwwxUgErwJXkjJKKXafYcbq/22S7wkaoDW5XAvplSu3skxdE0NRGVzozcDMXO5UoGlt9Ti4XIBMCvy7bB/NO+J5IgNedCtcNnBsrGZCdodW3DTYtqQLs="
+script:
+  - mvn clean cobertura:cobertura -Dtest=BaseMapTest#serializeAsString -DfailIfNoTests=false
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/jackson-databind/target/site/cobertura
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "eJv1hWDzvfFbBTSYaxAEv01bs0j6q7VTV8hwsUvLHchPt9nd1SRnr00YwSrwZD98+Cs+1SFO+Y6AE6gQXcLVWEf9hf44+hMWC5JyvrFlY1KoAL+fED98f9GJUks05bB7unOYejHdTcjwhz2IZGxQ6curAFHUZJ+pkBABFUnzBMRadx1LQKiU6nkHMwP1XGJDGQRiMoXwaI4X7KvkXdbb3tNiOmKEWn0ZcxhzQGRfWkOHKhuPFOainXQaObPmv6xyuDIaDgdfgzowKgxFqcEG9RC55t6U+34AxSgu6ZIghG0oTzpZ75AM/I5KUUiGrf0ahcfv3s65Bd1G4B6F73atMDAyb3CleDXqNV8/Ir5y9BrxevNqAAuZOP4aHrrW8tcS4uobn1HQ7umbvHlbwCayzD2M5cX3wY2+/kXp9VjU3nskAvkd1Kb0TfkAEXb6fH6emSF5fmeQsb7P4xUSBGFt41DCxbTvxqA4XxC+DLRoiuAFimUNf3TnjSFGC0N6mue0aGR8r/afhzcPtjUbZJdQLJqr4dRL8JeNqa+jKU5YbDeqmQn6FX4Z1MdKOqry84t0KiYxGRSYiXEQnzp0U6UkQmTHdDzAVST0AFMIMO9ptKlzj/11/5tqcvnkJIwcr/KUnGgkhjqvorOus3u8O11ww6zWUBTTONcD4IkbR5S9uFM="
+
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
