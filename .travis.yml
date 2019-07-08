@@ -2,7 +2,7 @@ language: java
 
 # Since Jackson 2.7, build requires jdk7, although module itself works on jdk6 still (for now)
 jdk:
-  - oraclejdk7
+  - oraclejdk11
   - oraclejdk8
 
 # Below this line is configuration for deploying to the Sonatype OSS repo
@@ -11,13 +11,6 @@ before_install: "git clone -b travis `git config --get remote.origin.url` target
 after_success:
   - "mvn source:jar javadoc:jar deploy --settings target/travis/settings.xml"
   - "mvn -B cobertura:cobertura coveralls:report"
-
-# whitelist
-branches:
-  only:
-    - master
-    - "2.7"
-    - "2.8"
 
 env:
   global:
